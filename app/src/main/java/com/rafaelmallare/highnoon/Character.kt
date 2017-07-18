@@ -11,7 +11,7 @@ object Character {
     var faction = "Placeholder: Faction"
     var classes = "Placeholder: Classes"
 
-    var statDiffCap = 4
+    var statSpread = 4
 
     val baseStats = mutableMapOf(
             STR to 1, CON to 1, DEX to 1,
@@ -24,14 +24,24 @@ object Character {
         val tmpMap = baseStats.filterKeys { key -> key.category == stat.category }.toMutableMap()
         tmpMap.put(stat, updatedValue + amount)
 
-        if ((tmpMap.values.max() ?: 0) - (tmpMap.values.min() ?: 0) > statDiffCap) return false
+        if ((tmpMap.values.max() ?: 0) - (tmpMap.values.min() ?: 0) > statSpread) return false
 
         baseStats.put(stat, updatedValue)
 
         return true
     }
 
-    object derivedStats {
+    fun equipItem(item: Equipment) {
+        //TODO: Equip
+        derivedStats.addModifiers(item.name, item.modifiers)
+    }
+
+    fun unequipItem(item: Equipment) {
+        //TODO: Unequip
+        derivedStats.removeModifiers(item.name)
+    }
+
+    private object derivedStats {
         val modifierList = mutableListOf<Triple<DerivedStat, Int, String>>()
 
         operator fun get(derivedStat: DerivedStat): Pair<Int, Int> {
