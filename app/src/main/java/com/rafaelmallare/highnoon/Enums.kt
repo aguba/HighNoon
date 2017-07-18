@@ -1,5 +1,7 @@
 package com.rafaelmallare.highnoon
 
+import com.rafaelmallare.highnoon.EquipSlot.*
+
 /**
  * Created by Rj on 7/16/2017.
  */
@@ -13,8 +15,8 @@ enum class DerivedStat {
     HP, INIT, DEF, ARM, ATK, DMG, WILL, MP, SPD
 }
 
-enum class EquipmentType {
-    ARMOR, SHIELDS, HELMET, MELEE, RANGED
+enum class EquipmentType(val equipSlot: EquipSlot) {
+    ARMOR(BODY), SHIELDS(PRIMEHAND), HELMET(HEAD), MELEE(PRIMEHAND), RANGED(PRIMEHAND)
 }
 
 enum class EquipmentSubType {
@@ -23,4 +25,8 @@ enum class EquipmentSubType {
 
 enum class Currency {
     G, CASH, TRI
+}
+
+enum class EquipSlot {
+    HEAD, BODY, PRIMEHAND, OFFHAND
 }

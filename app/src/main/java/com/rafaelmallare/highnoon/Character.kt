@@ -2,6 +2,8 @@ package com.rafaelmallare.highnoon
 
 import com.rafaelmallare.highnoon.BaseStat.*
 import com.rafaelmallare.highnoon.DerivedStat.*
+import com.rafaelmallare.highnoon.EquipmentType.*
+import com.rafaelmallare.highnoon.EquipSlot.*
 
 /**
  * Created by Rj on 7/16/2017.
@@ -16,6 +18,15 @@ object Character {
     val baseStats = mutableMapOf(
             STR to 1, CON to 1, DEX to 1,
             PER to 1, CHR to 1, INT to 1)
+
+    val emptyHead = Equipment("Empty Head", HELMET)
+    val emptyBody = Equipment("Empty Body", ARMOR)
+    val emptyHand = Equipment("Empty Hand", MELEE)
+    val fullHand = Equipment("Full Hand", MELEE)
+
+    val equipmentSlots = mutableMapOf<EquipSlot, Equipment>(
+            HEAD to emptyHead, BODY to emptyBody, PRIMEHAND to emptyHand, OFFHAND to emptyHand
+    )
 
     fun changeStatBy(stat: BaseStat, amount: Int): Boolean {
         val updatedValue = (baseStats[stat] ?: 0) + amount
@@ -32,13 +43,32 @@ object Character {
     }
 
     fun equipItem(item: Equipment) {
-        //TODO: Equip
+        //TODO: Check if item is in inventory first
+        if (item.equipSlot == PRIMEHAND && equipmentSlots[OFFHAND] == fullHand) equipmentSlots.put(OFFHAND, emptyHand)
+        else if (item.isTwoHanded) equipmentSlots.put(OFFHAND, fullHand)
+        equipmentSlots.put(item.equipSlot, item)
+
         derivedStats.addModifiers(item.name, item.modifiers)
     }
 
-    fun unequipItem(item: Equipment) {
-        //TODO: Unequip
+    fun unequipItem(item: Equipment): Boolean {
+        val slot = item.equipSlot
+        if (item != equipmentSlots[slot]) return false
+        when(slot) {
+            HEAD -> equipmentSlots.put(HEAD, emptyHead)
+            BODY -> equipmentSlots.put(BODY, emptyBody)
+            PRIMEHAND -> {
+                if (equipmentSlots[OFFHAND] == item) equipmentSlots.put(OFFHAND, emptyHand)
+                else {
+                    if (item.isTwoHanded) equipmentSlots.put(OFFHAND, emptyHand)
+                    equipmentSlots.put(PRIMEHAND, emptyHand)
+                }
+            }
+        }
+
         derivedStats.removeModifiers(item.name)
+
+        return true
     }
 
     private object derivedStats {

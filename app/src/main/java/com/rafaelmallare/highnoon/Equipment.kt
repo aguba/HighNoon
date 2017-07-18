@@ -9,8 +9,14 @@ import com.rafaelmallare.highnoon.EquipmentSubType.*
  */
 
 class Equipment(val name: String, val type: EquipmentType,
-                val subType: EquipmentSubType? = null, val modifiers: Map<DerivedStat, Int>,
+                val subType: EquipmentSubType? = null, val modifiers: Map<DerivedStat, Int> = mapOf<DerivedStat, Int>(),
                 val cost: Int = 0, val currency: Currency = G) {
     val isWeapon: Boolean
         get() = type == MELEE || type == RANGED
+
+    val isTwoHanded: Boolean
+        get() = isWeapon && (subType == TWOHAND || subType == LONG || subType == RIFLE || subType == SHOTGUN || subType == ARCHERY)
+
+    val equipSlot: EquipSlot
+        get() = type.equipSlot
 }
