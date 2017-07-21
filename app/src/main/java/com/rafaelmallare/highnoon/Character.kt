@@ -19,12 +19,14 @@ object Character {
             STR to 1, CON to 1, DEX to 1,
             PER to 1, CHR to 1, INT to 1)
 
-    val emptyHead = Equipment("Empty Head", HELMET)
-    val emptyBody = Equipment("Empty Body", ARMOR)
-    val emptyHand = Equipment("Empty Hand", MELEE)
-    val fullHand = Equipment("Full Hand", MELEE)
+    val inventory = mutableListOf<Equipment>()
 
-    val equipmentSlots = mutableMapOf<EquipSlot, Equipment>(
+    private val emptyHead = Equipment("Empty Head", HELMET)
+    private val emptyBody = Equipment("Empty Body", ARMOR)
+    private val emptyHand = Equipment("Empty Hand", MELEE)
+    private val fullHand = Equipment("Full Hand", MELEE)
+
+    val equipmentSlots = mutableMapOf(
             HEAD to emptyHead, BODY to emptyBody, PRIMEHAND to emptyHand, OFFHAND to emptyHand
     )
 
@@ -42,27 +44,39 @@ object Character {
         return true
     }
 
-    fun equipItem(item: Equipment) {
-        //TODO: Check if item is in inventory first
-        if (item.equipSlot == PRIMEHAND && equipmentSlots[OFFHAND] == fullHand) equipmentSlots.put(OFFHAND, emptyHand)
-        else if (item.isTwoHanded) equipmentSlots.put(OFFHAND, fullHand)
-        equipmentSlots.put(item.equipSlot, item)
+    fun equipItem(item: Equipment, inOffhand: Boolean = false): Boolean {
+        if (item !in inventory) return false
+
+        if (item.isTwoHanded) {
+            equipmentSlots.put(OFFHAND, fullHand)
+            equipmentSlots.put(item.equipSlot, item)
+        } else if (item.isWeapon && equipmentSlots[OFFHAND] === fullHand) {
+            equipmentSlots.put(OFFHAND, emptyHand)
+            equipmentSlots.put(item.equipSlot, item)
+        } else if (item.isWeapon && inOffhand) {
+            item.isOffhand = true
+            equipmentSlots.put(OFFHAND, item)
+        } else equipmentSlots.put(item.equipSlot, item)
 
         derivedStats.addModifiers(item.name, item.modifiers)
+
+        return true
     }
 
     fun unequipItem(item: Equipment): Boolean {
         val slot = item.equipSlot
-        if (item != equipmentSlots[slot]) return false
+        if (item !== equipmentSlots[slot]) return false
         when(slot) {
             HEAD -> equipmentSlots.put(HEAD, emptyHead)
             BODY -> equipmentSlots.put(BODY, emptyBody)
             PRIMEHAND -> {
-                if (equipmentSlots[OFFHAND] == item) equipmentSlots.put(OFFHAND, emptyHand)
-                else {
-                    if (item.isTwoHanded) equipmentSlots.put(OFFHAND, emptyHand)
-                    equipmentSlots.put(PRIMEHAND, emptyHand)
-                }
+                if (item.isTwoHanded) equipmentSlots.put(OFFHAND, emptyHand)
+                equipmentSlots.put(PRIMEHAND, emptyHand)
+            }
+            OFFHAND -> {
+                if (item.isTwoHanded) equipmentSlots.put(PRIMEHAND, emptyHand)
+                item.isOffhand = false
+                equipmentSlots.put(OFFHAND, emptyHand)
             }
         }
 
@@ -71,7 +85,7 @@ object Character {
         return true
     }
 
-    private object derivedStats {
+    object derivedStats {
         val modifierList = mutableListOf<Triple<DerivedStat, Int, String>>()
 
         operator fun get(derivedStat: DerivedStat): Pair<Int, Int> {
