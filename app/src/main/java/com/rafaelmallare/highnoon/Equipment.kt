@@ -20,6 +20,8 @@ class Equipment(val name: String, val type: EquipmentType,
     val equipSlot
         get() = _equipSlot
 
+
+
     private companion object {
         var refId = 0
     }
