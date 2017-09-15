@@ -13,8 +13,9 @@ open class Skill(val name: String, val parentStat1: BaseStat, val parentStat2: B
     fun lvlUp(): Boolean {
         if (lvl >= 10) return false
 
+        PlayerManager.exp.changeBy(-costToNextLvl)
         lvl++
-        return false
+        return true
     }
 }
 
