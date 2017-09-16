@@ -6,7 +6,7 @@ package com.rafaelmallare.highnoon
 object EquipmentManager {
     private val emptyHead = Equipment("Empty Head", EquipmentType.HELMET)
     private val emptyBody = Equipment("Empty Body", EquipmentType.ARMOR)
-    private val emptyHand = Equipment("Empty Hand", EquipmentType.MELEE)
+    private val emptyHand = Equipment("Empty Hand", EquipmentType.MELEE, EquipmentSubType.UNARMED)
     private val fullHand = Equipment("Full Hand", EquipmentType.MELEE)
 
     private val nullEquipment = Equipment("Null Equipment", EquipmentType.MELEE)

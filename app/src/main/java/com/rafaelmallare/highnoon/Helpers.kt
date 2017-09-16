@@ -10,6 +10,6 @@ val Pair<Int, Int>.base
 val Pair<Int, Int>.total
     get() = second
 
-operator fun MutableMap<BaseStat, Int>.get(stat: BaseStat, defaultValue: Int): Int {
+operator fun MutableMap<BaseStat, Int>.get(stat: BaseStat, defaultValue: Int = 0): Int {
     return this[stat] ?: defaultValue
 }

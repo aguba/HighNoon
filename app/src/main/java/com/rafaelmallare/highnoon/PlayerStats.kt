@@ -43,15 +43,19 @@ object PlayerStats {
         operator fun get(derivedStat: DerivedStat): Pair<Int, Int> {
             val base: Int
             when (derivedStat) {
-                DerivedStat.HP -> base = baseStats[BaseStat.STR, 0] + 2 * baseStats[BaseStat.CON, 0] + 10
+                DerivedStat.HP -> base = baseStats[BaseStat.STR, 0] + (2 * baseStats[BaseStat.CON, 0]) + 10
                 DerivedStat.INIT -> base = baseStats[BaseStat.DEX, 0] + baseStats[BaseStat.PER, 0]
                 DerivedStat.DEF -> base = baseStats[BaseStat.DEX, 0] // + Card? + EvasionSkill? (ask Sean)
-                DerivedStat.ATK -> base = baseStats[BaseStat.PER, 0] // + WepMastSkill
                 DerivedStat.ARM -> base = 0
                 DerivedStat.DMG -> base = baseStats[BaseStat.STR, 0]
                 DerivedStat.WILL -> base = baseStats[BaseStat.INT, 0] + baseStats[BaseStat.CHR, 0] + 3
                 DerivedStat.MP -> base = baseStats[BaseStat.INT, 0] + baseStats[BaseStat.CON, 0] + 10
-                DerivedStat.SPD -> base = baseStats[BaseStat.DEX, 0] / 2 + 4
+                DerivedStat.SPD -> base = (baseStats[BaseStat.DEX, 0] / 2) + 4
+                DerivedStat.ATK -> {
+                    val masterySkill = EquipmentManager[EquipSlot.PRIMEHAND].subType ?: EquipmentManager[EquipSlot.OFFHAND].subType
+                    val masterySkillLvl = if (masterySkill == null) 0 else PlayerSkills[masterySkill].lvl
+                    base = baseStats[BaseStat.PER, 0] + masterySkillLvl
+                }
             }
 
             var total = 0
