@@ -4,7 +4,9 @@ package com.rafaelmallare.highnoon
  * Created by Rj on 9/14/2017.
  */
 object PlayerSkills {
-    private val general = mutableMapOf<String, Skill>()
+    private val general = mutableMapOf<String, Skill>(
+            "Debug Skill" to Skill("Debug Skill", BaseStat.PER)
+    )
     private val combat = mutableMapOf(
             "Aim" to Skill("Aim", BaseStat.PER),
             "Block" to Skill("Block", BaseStat.CON),

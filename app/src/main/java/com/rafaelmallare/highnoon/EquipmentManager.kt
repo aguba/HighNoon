@@ -9,20 +9,26 @@ object EquipmentManager {
     private val emptyHand = Equipment("Empty Hand", EquipmentType.MELEE)
     private val fullHand = Equipment("Full Hand", EquipmentType.MELEE)
 
-    val equipmentSlots = mutableMapOf(
+    private val nullEquipment = Equipment("Null Equipment", EquipmentType.MELEE)
+
+    private val equipmentSlots = mutableMapOf(
             EquipSlot.HEAD to emptyHead, EquipSlot.BODY to emptyBody, EquipSlot.PRIMEHAND to emptyHand, EquipSlot.OFFHAND to emptyHand
     )
 
-    fun equipItem(item: Equipment, inOffhand: Boolean = false): Boolean {
+    operator fun get(slot: EquipSlot) : Equipment {
+        return equipmentSlots[slot] ?: nullEquipment
+    }
+
+    fun equipItem(item: Equipment, forceOffHand: Boolean = false): Boolean {
         if (item !in PlayerManager.inventory) return false
 
         if (item.isTwoHanded) {
             equipmentSlots.put(EquipSlot.OFFHAND, fullHand)
             equipmentSlots.put(item.equipSlot, item)
-        } else if (item.isWeapon && equipmentSlots[EquipSlot.OFFHAND] === fullHand) {
+        } else if ((item.isWeapon || item.isShield) && equipmentSlots[EquipSlot.OFFHAND] === fullHand) {
             equipmentSlots.put(EquipSlot.OFFHAND, emptyHand)
             equipmentSlots.put(item.equipSlot, item)
-        } else if (item.isWeapon && inOffhand) {
+        } else if (item.isOffhand || ((item.isWeapon || item.isShield) && forceOffHand)) {
             item.isOffhand = true
             equipmentSlots.put(EquipSlot.OFFHAND, item)
         } else equipmentSlots.put(item.equipSlot, item)
@@ -44,7 +50,7 @@ object EquipmentManager {
             }
             EquipSlot.OFFHAND -> {
                 if (item.isTwoHanded) equipmentSlots.put(EquipSlot.PRIMEHAND, emptyHand)
-                item.isOffhand = false
+                item.isOffhand = (item.defaultEquipSlot == EquipSlot.OFFHAND)
                 equipmentSlots.put(EquipSlot.OFFHAND, emptyHand)
             }
         }

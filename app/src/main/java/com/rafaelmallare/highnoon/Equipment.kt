@@ -20,7 +20,7 @@ class Equipment(val name: String, val type: EquipmentType,
     val equipSlot
         get() = _equipSlot
 
-
+    val defaultEquipSlot = equipSlot
 
     private companion object {
         var refId = 0
@@ -34,6 +34,12 @@ class Equipment(val name: String, val type: EquipmentType,
 
     val isWeapon: Boolean
         get() = type == MELEE || type == RANGED
+
+    val isShield: Boolean
+        get() = type == SHIELDS
+
+    val isArmor: Boolean
+        get() = type == ARMOR || type == HELMET
 
     val isTwoHanded: Boolean
         get() = isWeapon && (subType == TWOHAND || subType == LONG || subType == RIFLE || subType == SHOTGUN || subType == ARCHERY)
